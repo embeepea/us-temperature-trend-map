@@ -1,4 +1,6 @@
-GHCN Trend Map is an interctive web application that lets the user explore and visualize
+# GHCN Trend Map
+
+This an interctive web application that lets the user explore and visualize
 long term daily temperature data from the
 [Global Historical Climatology Network](https://www.ncdc.noaa.gov/data-access/land-based-station-data/land-based-datasets/global-historical-climatology-network-ghcn).
 
@@ -30,6 +32,10 @@ Here's what went into it:
 5. For each of the above annual average TMIN/TMAX time series, I computed
    a linear least-squares best-fit line for the series.
    
+The code that performed the above analysis is written in Clojure and
+is available here: 
+[http://github.com/embeepea/ghcn-trend-analysis](http://github.com/embeepea/ghcn-trend-analysis).
+
 When the map first appears, it shows the 2094 stations colored according to
 the average of these two slopes, with red corresponding to positive values,
 and blue corresponding to negative values.
