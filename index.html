@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8">
+ <script src="libs/leaflet.js"></script>
+ <script src="libs/ug-d3.v3.js"></script>
+ <script src="libs/multigraph-min.js"></script>
+ <script src="libs/sprintf.js"></script>
+ <script src="map.js"></script>
+ <link rel="stylesheet" href="libs/bootstrap-3.3.4-dist/css/bootstrap.css" />
+ <link rel="stylesheet" href="libs/leaflet.css" />
+ <style type="text/css">
+html, body, #map {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+div.graph-background {
+  background-color: #000000;
+  opacity: 1.0;
+  margin: 0;
+  padding: 0;
+  border-radius: 10px;
+}
+
+div.graph {
+  margin: 0;
+  padding: 0;
+}
+
+div#data-graph-background {
+  width: 400px;
+  height: 200px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+div#data-graph-title {
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  color: #ffffff;
+  width: 400px;
+  height: 20px;
+  font: 14px Arial;
+  position: absolute;
+  top: 8px;
+  right: 10px;
+}
+div#data-graph {
+  width: 400px;
+  height: 180px;
+  font: 12px Arial;
+  position: absolute;
+  top: 20px;
+  left: 0px;
+}
+div#data-graph-openicon {
+  padding: 0;
+  margin: 0;
+  font: 14px Arial;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+
+}
+
+span.openicon {
+  color: #999999;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+div#trend-graph-background {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: 220px;
+  right: 10px;
+}
+div#trend-graph {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font: 12px Arial;
+}
+
+div#trend-graph-slope-display {
+  position: absolute;
+  width: 138px;
+  height: 20px;
+  left: 10px;
+  bottom: 0px;
+  background-color: #000000;
+}
+
+span.slope-display {
+  width: 43px;
+  border: 0;
+  height: 20px;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+span#slope-display-tmax {
+  color: #ff0000;
+}
+span#slope-display-tavg {
+  color: #ffffff;
+}
+span#slope-display-tmin {
+  color: #00ffff;
+}
+
+div#controls {
+  border-radius: 10px;
+  padding: 5px;
+  background-color: #ffffff;
+  border: 1px solid black;
+  position: absolute;
+  top: 380px;
+  right: 10px;
+  font: 12px Arial;
+}
+
+
+div.graph text { 
+  fill: #ffffff;
+}
+
+div.graph path.tmax-data { 
+    stroke: #ff0000;
+    stroke-width: 2;
+    fill: none;
+}
+div.graph path.tmin-data { 
+    stroke: #00ffff;
+    stroke-width: 2;
+    fill: none;
+}
+div.graph path.tavg-data { 
+    stroke: #ffffff;
+    stroke-width: 2;
+    fill: none;
+}
+
+div.graph path.tmax-trend { 
+/*    stroke: #ffff00; */
+    stroke: #ff0000;
+    stroke-width: 1;
+    fill: none;
+}
+
+div.graph path.tmin-trend { 
+/*    stroke: #ffff00; */
+    stroke: #00ffff;
+    stroke-width: 1;
+    fill: none;
+}
+div.graph path.tavg-trend { 
+/*    stroke: #ffff00; */
+    stroke: #ffffff;
+    stroke-width: 1;
+    fill: none;
+}
+
+div.graph .axis path,
+div.graph .axis line {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+div#trend-graph path {
+    stroke-width: 2;
+}
+
+#map {
+   stroke: #000000;
+   stroke-width: 1;
+}
+
+span.visible {
+  display: inline;
+}
+span.invisible {
+  display: none;
+}
+
+span.openicon:hover {
+  color: #ffffff;
+  cursor: pointer;
+}
+
+#graph-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.5);
+}
+
+div.visible {
+  display: block;
+}
+div.invisible {
+  display: none;
+}
+
+div#station-coloring-display {
+  position: absolute;
+  padding: 5px;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255,255,255,0.9);
+  color: #000000;
+  border-radius: 10px;
+  font: 18px Arial;
+}
+
+#graph-overlay .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 30px;
+  color: #666666;
+}
+
+#graph-overlay .close-button:hover {
+  color: #000000;
+  cursor: pointer;
+}
+
+#graph-overlay .graph-wrapper {
+  background: rgba(255,255,255,1.0);
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  top: 5%;
+  left: 5%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 25px;
+}
+
+#graph-overlay .graph-wrapper .multigraph-wrapper {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
+}
+
+.multigraph-wrapper .multigraph {
+  width: 100%;
+  height: 100%;
+}
+
+ </style>
+</head>
+<body> 
+ <div id="map"></div>
+ <div id="data-graph-background" class="graph-background">
+   <div id="data-graph" class="graph"></div>
+   <div id="data-graph-title"></div>
+   <div id="data-graph-openicon">
+     <span class="invisible openicon glyphicon glyphicon-new-window"></span>
+   </div>
+ </div>
+ <div id="trend-graph-background" class="graph-background">
+   <div id="trend-graph" class="graph"></div>
+   <div id="trend-graph-slope-display" class="graph-background">
+     <span id="slope-display-tmax" class="slope-display"></span>
+     <span id="slope-display-tavg" class="slope-display"></span>
+     <span id="slope-display-tmin" class="slope-display"></span>
+   </div>
+ </div>
+ <div id="controls">
+   <table>
+     <tr><td>TMAX</td><td><input type="radio" name="stationColorVar" value="tmax"></td></tr>
+     <tr><td>TAVG</td><td><input type="radio" name="stationColorVar" value="tavg"></td></tr>
+     <tr><td>TMIN</td><td><input type="radio" name="stationColorVar" value="tmin"></td></tr>
+   </table>
+ </div>
+ <div id="station-coloring-display"></div>
+ <div id="graph-overlay" class="invisible">
+   <div class="graph-wrapper">
+     <div class="close-button"><span class="glyphicon glyphicon-remove-circle"></span></div>
+     <div class="multigraph-wrapper"></div>
+   </div>
+ </div>
+</body>
+</html>
