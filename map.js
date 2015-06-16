@@ -138,7 +138,33 @@ function stringify_dates(data) {
     return data;
 }
 
+function same_month(yyyymmdd1, yyyymmdd2) {
+    return yyyymmdd1.substr(0,6) === yyyymmdd2.substr(0,6);
+}
+
+function monthly_minmax_from_daily(daily_data) {
+    var i, j, monthly_data = [];
+    if (daily_data.length > 0) {
+        monthly_data.push( [daily_data[0][0], daily_data[0][1], daily_data[0][2]] );
+        for (i=1, j=0; i<daily_data.length; ++i) {
+            if (same_month(daily_data[i][0], monthly_data[j][0])) {
+                if (daily_data[i][1] < monthly_data[j][1]) {
+                    monthly_data[j][1] = daily_data[i][1];
+                }
+                if (daily_data[i][2] > monthly_data[j][2]) {
+                    monthly_data[j][2] = daily_data[i][2];
+                }
+            } else {
+                ++j;
+                monthly_data.push( [daily_data[i][0], daily_data[i][1], daily_data[i][2]] );
+            }
+        }
+    }
+    return monthly_data;
+}
+
 function make_mugl(daily_minmax_data, annual_min_data, annual_max_data) {
+    var monthly_minmax_data = monthly_minmax_from_daily(daily_minmax_data);
     return {
         "window": { "border": 1, "bordercolor": "0x000000", "padding": 0, "margin": 0 },
         "plotarea": { "marginbottom": 40, "margintop": 45, "marginleft": 38, "marginright": 15 },
@@ -161,6 +187,12 @@ function make_mugl(daily_minmax_data, annual_min_data, annual_max_data) {
             "verticalaxis": {"temp": ["minTemperature", "maxTemperature"]},
             "legend": { "label": "Daily Max/Min Temp" }
         },{
+            "style": "band",
+            "options": { "fillcolor": "0x9999ff", "linecolor": "0x9999ff", "linewidth": 1 },
+            "horizontalaxis": {"Time": "monthly-time"},
+            "verticalaxis": {"temp": ["monthly-tmin", "monthly-tmax"]},
+            "legend": false
+        },{
             "style": "line",
             "options": { "linecolor": "0xff0000", "linewidth": 2 },
             "horizontalaxis": {"Time": "annual-tmax-time"},
@@ -177,6 +209,9 @@ function make_mugl(daily_minmax_data, annual_min_data, annual_max_data) {
         "data": [{
             "variables": [ {"id": "Time", "type": "datetime"}, {"id": "minTemperature"}, {"id": "maxTemperature"} ],
             "values": daily_minmax_data
+        },{
+            "variables": [ {"id": "monthly-time", "type": "datetime"}, {"id": "monthly-tmin"}, {"id": "monthly-tmax"} ],
+            "values": monthly_minmax_data
         },{
             "variables": [ {"id": "annual-tmin-time", "type": "datetime"}, {"id": "annual-tmin"} ],
             "values": stringify_dates(annual_min_data)
@@ -692,13 +727,16 @@ function init_ui() {
             $mgDiv.multigraph('done', function(m) {
                 var haxis = m.graphs().at(0).axes().at(0);
                 var daily_plot = m.graphs().at(0).plots().at(0);
+                var monthly_plot = m.graphs().at(0).plots().at(1);
                 var threshold = multigraph.core.DatetimeMeasure.parse("11Y");
                 function set_plot_visibility(min, max) {
                     if (max.getRealValue() - min.getRealValue() > threshold.getRealValue()) {
                         // the range of data in view is larger than threshold, so turn daily plot off
                         daily_plot.visible(false);
+                        monthly_plot.visible(true);
                     } else {
                         daily_plot.visible(true);
+                        monthly_plot.visible(false);
                     }
                 }
                 set_plot_visibility(haxis.dataMin(), haxis.dataMax());
