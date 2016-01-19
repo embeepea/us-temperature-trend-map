@@ -644,10 +644,13 @@ $(document).ready(function() {
     }).setView([37.09, -95.71], 5);
     map.attributionControl.setPrefix("");
 
-    L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+    var mbUrl = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}@2x.png?access_token=pk.eyJ1IjoiZW1iZWVwZWEiLCJhIjoiZTIyMTc1MmFkOWYwODI3MTYwMmY3MDU0NTYxNmYxZWUifQ.hm8HaatuyBAdwRWiYYYBZw";
+
+    //L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+    L.tileLayer(mbUrl, {
         maxZoom: 18,
-        attribution: "",
-        id: 'examples.map-i875mjb7'
+        attribution: ""//,
+        //id: 'examples.map-i875mjb7'
     }).addTo(map);
 
     $.ajax({
