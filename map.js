@@ -1,9 +1,5 @@
-//
-// TODO: standardize on names_like_this instead of namesLikeThis
-//
-
 var state = {
-    graph_config: {
+    graphConfig: {
         year1: 1900,
         year2: 2015,
         temp1: 20,
@@ -15,9 +11,9 @@ var state = {
         "blue-red":   ['rgb(5,48,97)', 'rgb(33,102,172)', 'rgb(67,147,195)','rgb(146,197,222)', 'rgb(209,229,240)', 'rgb(247,247,247)',
                        'rgb(253,219,199)', 'rgb(244,165,130)', 'rgb(214,96,77)', 'rgb(178,24,43)', 'rgb(103,0,31)']
     },
-    station_color_var : "tavg", // should be one of "tmax", "tmin", "tavg"
-    last_feature: undefined,
-    click_locked: false
+    stationColorVar : "tavg", // should be one of "tmax", "tmin", "tavg"
+    lastfeature: undefined,
+    clickLocked: false
 };
 
 // Take a string representation of CSV data and convert it to an array.
@@ -32,7 +28,7 @@ var state = {
 //     [["20110102",77]
 //      ["20110103",72]
 //      ["20110104",64]]
-function csv_string_to_data_array(s) {
+function csvStringToDataArray(s) {
     var a = [];
     var f;
     s.split(/\n/).forEach(function(t) {
@@ -44,11 +40,11 @@ function csv_string_to_data_array(s) {
     return a;
 }
 
-// Take two data arrays of the sort returned by csv_string_to_data_array() above,
+// Take two data arrays of the sort returned by csvStringToDataArray() above,
 // and return a single data array containing 3 values per row: the YYYYMMDD
 // datetime string, followed by the two data values for that date.  Skip any
 // dates not present in both input arrays.
-function merge_two_data_arrays(data1, data2) {
+function mergeTwoDataArrays(data1, data2) {
     var i, j, d = [];
     for (i=0, j=0; i<data1.length && j<data2.length; /**/) {
         if (data1[i][0] == data2[j][0]) {
@@ -70,7 +66,7 @@ function fahrenheit(c) {
 }
 
 // convert 10ths of degrees Celsius to Fahrenheit.
-function scale_temp(tc) {
+function scaleTemp(tc) {
     return fahrenheit(tc / 10.0);
 }
 
@@ -79,11 +75,11 @@ function scale_temp(tc) {
 // temperature in 10ths of degrees celsius, and convert all the
 // temperatures to fahrenheit.  Modifies the original array
 // in-place, and returns it
-function scale_temp_data_array(data) {
+function scaleTempDataArray(data) {
     var i, j;
     for (i=0; i<data.length; ++i) {
         for (j=1; j<data[i].length; ++j) {
-            data[i][j] = scale_temp(data[i][j]);
+            data[i][j] = scaleTemp(data[i][j]);
         }
     }
     return data;
@@ -91,14 +87,14 @@ function scale_temp_data_array(data) {
 
 // Take a floating point number representing a slope, and return
 // a string suitable for display to the user
-function format_slope(m) {
+function formatSlope(m) {
     return sprintf("%.3f", 100*m);
 }
 
-// Take a data array of the sort returned by csv_string_to_data_array() above,
+// Take a data array of the sort returned by csvStringToDataArray() above,
 // and convert it to an object whose keys are YYYYMMDD strings, and whose
 // values are the int values
-function data_array_to_object(data) {
+function dataArrayToObject(data) {
     var obj = {};
     data.forEach(function(d) {
         obj[d[0]] = d[1];
@@ -107,7 +103,7 @@ function data_array_to_object(data) {
 }
 
 
-function get_station_tmin_tmax(id, callback) {
+function getStationTMinTMax(id, callback) {
     $.when.apply($, [
         $.ajax({
             url: 'https://s3.amazonaws.com/nemac-ghcnd/' + id + '/TMIN.csv.gz',
@@ -123,48 +119,48 @@ function get_station_tmin_tmax(id, callback) {
                 //console.log('got TMAX');
             }
         })
-    ]).done(function(tmin_response, tmax_response) {
-        var tmin_data = csv_string_to_data_array(tmin_response[0]);
-        var tmax_data = csv_string_to_data_array(tmax_response[0]);
-        var d = scale_temp_data_array(merge_two_data_arrays(tmin_data, tmax_data));
+    ]).done(function(tminResponse, tmaxResponse) {
+        var tminData = csvStringToDataArray(tminResponse[0]);
+        var tmaxData = csvStringToDataArray(tmaxResponse[0]);
+        var d = scaleTempDataArray(mergeTwoDataArrays(tminData, tmaxData));
         callback(d);
     });
 }
 
-function stringify_dates(data) {
+function stringifyDates(data) {
     for (i=0; i<data.length; ++i) {
         data[i][0] = data[i][0] + "0701";
     }
     return data;
 }
 
-function same_month(yyyymmdd1, yyyymmdd2) {
+function sameMonth(yyyymmdd1, yyyymmdd2) {
     return yyyymmdd1.substr(0,6) === yyyymmdd2.substr(0,6);
 }
 
-function monthly_minmax_from_daily(daily_data) {
-    var i, j, monthly_data = [];
-    if (daily_data.length > 0) {
-        monthly_data.push( [daily_data[0][0], daily_data[0][1], daily_data[0][2]] );
-        for (i=1, j=0; i<daily_data.length; ++i) {
-            if (same_month(daily_data[i][0], monthly_data[j][0])) {
-                if (daily_data[i][1] < monthly_data[j][1]) {
-                    monthly_data[j][1] = daily_data[i][1];
+function monthlyMinMaxFromDaily(dailyData) {
+    var i, j, monthlyData = [];
+    if (dailyData.length > 0) {
+        monthlyData.push( [dailyData[0][0], dailyData[0][1], dailyData[0][2]] );
+        for (i=1, j=0; i<dailyData.length; ++i) {
+            if (sameMonth(dailyData[i][0], monthlyData[j][0])) {
+                if (dailyData[i][1] < monthlyData[j][1]) {
+                    monthlyData[j][1] = dailyData[i][1];
                 }
-                if (daily_data[i][2] > monthly_data[j][2]) {
-                    monthly_data[j][2] = daily_data[i][2];
+                if (dailyData[i][2] > monthlyData[j][2]) {
+                    monthlyData[j][2] = dailyData[i][2];
                 }
             } else {
                 ++j;
-                monthly_data.push( [daily_data[i][0], daily_data[i][1], daily_data[i][2]] );
+                monthlyData.push( [dailyData[i][0], dailyData[i][1], dailyData[i][2]] );
             }
         }
     }
-    return monthly_data;
+    return monthlyData;
 }
 
-function make_mugl(daily_minmax_data, annual_min_data, annual_max_data) {
-    var monthly_minmax_data = monthly_minmax_from_daily(daily_minmax_data);
+function makeMugl(dailyMinMaxData, annualMinData, annualMaxData) {
+    var monthlyMinMaxData = monthlyMinMaxFromDaily(dailyMinMaxData);
     return {
         "window": { "border": 1, "bordercolor": "0x000000", "padding": 0, "margin": 0 },
         "plotarea": { "marginbottom": 40, "margintop": 45, "marginleft": 38, "marginright": 15 },
@@ -208,16 +204,16 @@ function make_mugl(daily_minmax_data, annual_min_data, annual_max_data) {
         "legend": { "visible": "true", "rows": 1, "border": 0, "opacity": 0, "anchor": [0, -1], "base": [0, 1] },
         "data": [{
             "variables": [ {"id": "Time", "type": "datetime"}, {"id": "minTemperature"}, {"id": "maxTemperature"} ],
-            "values": daily_minmax_data
+            "values": dailyMinMaxData
         },{
             "variables": [ {"id": "monthly-time", "type": "datetime"}, {"id": "monthly-tmin"}, {"id": "monthly-tmax"} ],
-            "values": monthly_minmax_data
+            "values": monthlyMinMaxData
         },{
             "variables": [ {"id": "annual-tmin-time", "type": "datetime"}, {"id": "annual-tmin"} ],
-            "values": stringify_dates(annual_min_data)
+            "values": stringifyDates(annualMinData)
         },{
             "variables": [ {"id": "annual-tmax-time", "type": "datetime"}, {"id": "annual-tmax"} ],
-            "values": stringify_dates(annual_max_data)
+            "values": stringifyDates(annualMaxData)
         }]
     };
 }
@@ -225,7 +221,7 @@ function make_mugl(daily_minmax_data, annual_min_data, annual_max_data) {
 // Take an array of 2 coefficients of a linear function, and
 // two x values, and returns an array of the points on the line
 // corresponding to the two input x values:
-function segment_on_line_coords(coeffs, x1, x2) {
+function segmentOnLineCoords(coeffs, x1, x2) {
     function y(x) {
         return coeffs[0] + x * coeffs[1];
     }
@@ -237,7 +233,7 @@ function segment_on_line_coords(coeffs, x1, x2) {
 // which give the lower left and upper right coordinates of a rectangle,
 // and return the coordinates of the endpoints of the line segment
 // through the midpoint of that rectangle having the given slope.
-function segment_through_midpoint_coords(m, p1, p2) {
+function segmentThroughMidpointCoords(m, p1, p2) {
     var ymid = (p1[1] + p2[1]) / 2;
     var xmid = (p1[0] + p2[0]) / 2;
     function y(x) {
@@ -247,7 +243,7 @@ function segment_through_midpoint_coords(m, p1, p2) {
     return ans;
 }
 
-function min_max(values) {
+function minMax(values) {
     var min = values[0];
     var max = min;
     var i;
@@ -258,14 +254,14 @@ function min_max(values) {
     return { min: min, max: max };
 }
 
-function linear_interpolator(a,b,A,B) {
+function linearInterpolator(a,b,A,B) {
     var f = (B - A) / (b - a);
     return function(x) {    // (a,b) -> (A,B)
         return (x - a) * f + A;
     };
 }
 
-function quantiles_classifier(values, numclasses) {
+function quantilesClassifier(values, numclasses) {
     // values: an array of numbers
     // numclasses: number of classes
     // returns: a function that converts values to a number in the range
@@ -290,7 +286,7 @@ function quantiles_classifier(values, numclasses) {
     };
 };
 
-function equal_intervals_classifier(a, b, numclasses) {
+function equalIntervalsClassifier(a, b, numclasses) {
     var d = (b - a) / numclasses;
     var i;
     var breaks = [];
@@ -329,17 +325,17 @@ function equal_intervals_classifier(a, b, numclasses) {
 //
 // Returns an object with the following methods:
 //
-//   set_series(...):
+//   setSeries(...):
 //      takes an object with a single propery named 'series', and whose
 //      structure is just like the 'series' object in the `options` object
 //      above; changes the data for the given series(es) in the plot to be
 //      what is given
-//   transition_to_series(...):
-//      same as `set_series`, but animates a smooth transition between any
+//   transitionToSeries(...):
+//      same as `setSeries`, but animates a smooth transition between any
 //      existing data for the given series(es), and the new data.  In addition
 //      to the `series` property, the input object also takes a property
 //      named `dura`, which gives the duration of the transition, in ms.
-function d3_graph(options) {
+function d3Graph(options) {
     var margin = options.margin || {top: 10, right: 10, bottom: 25, left: 28},
         width = options.$elem.width() - margin.left - margin.right,
         height = options.$elem.height() - margin.top - margin.bottom;
@@ -397,14 +393,14 @@ function d3_graph(options) {
                 .attr("d", valueline(options.series[seriesName]));
         }
     });
-    var set_series = function(args) {
+    var setSeries = function(args) {
         var svg = d3.selectAll(options.$elem.toArray());
         Object.keys(args.series).forEach(function(seriesName) {
             svg.select("."+seriesName)
                 .attr("d", valueline(args.series[seriesName]));
         });
     };
-    var transition_to_series = function(args) {
+    var transitionToSeries = function(args) {
         var svg = d3.selectAll(options.$elem.toArray()).transition();
         var dura = args.dura || 0;
         Object.keys(args.series).forEach(function(seriesName) {
@@ -414,15 +410,15 @@ function d3_graph(options) {
         });
     };
     if (options.data !== undefined) {
-        set_series(options);
+        setSeries(options);
     }
     return {
-        set_series: set_series,
-        transition_to_series:  transition_to_series
+        setSeries: setSeries,
+        transitionToSeries:  transitionToSeries
     };
 };
 
-function page_args() {
+function pageArgs() {
     var href = window.location.toString();
     var paramString = href.replace(/^.*\?/, "");
     var assigns = paramString.split("&");
@@ -438,8 +434,8 @@ function page_args() {
     return args;
 }
 
-function set_station_color_var(name) {
-    state.station_color_var = name;
+function setStationColorVar(name) {
+    state.stationColorVar = name;
     state.stationFeatures.forEach(function(feature) {
         feature.marker.setStyle({
             fillColor: state.stationFeatureToColor(feature)
@@ -450,7 +446,7 @@ function set_station_color_var(name) {
 };
 
 
-function set_visible($elem, visible) {
+function setVisible($elem, visible) {
     if (visible) {
         $elem.removeClass("invisible");
         $elem.addClass("visible");
@@ -460,24 +456,24 @@ function set_visible($elem, visible) {
     }
 }
 
-function set_controls(key) {
+function setControls(key) {
     if (key === "0") {
-        set_visible($("div#data-graph-background"), false);
-        set_visible($("div#trend-graph-background"), false);
-        set_visible($("div#controls"), false);
+        setVisible($("div#data-graph-background"), false);
+        setVisible($("div#trend-graph-background"), false);
+        setVisible($("div#controls"), false);
     } else if (key === "1") {
-        set_visible($("div#data-graph-background"), true);
+        setVisible($("div#data-graph-background"), true);
     } else if (key === "2") {
-        set_visible($("div#trend-graph-background"), true);
+        setVisible($("div#trend-graph-background"), true);
     } else if (key === "3") {
-        set_visible($("div#controls"), true);
+        setVisible($("div#controls"), true);
     }
 }
 
 
-function select_feature(marker, feature) {
-    if (state.last_feature) {
-        state.last_feature.marker.setStyle({
+function selectFeature(marker, feature) {
+    if (state.lastfeature) {
+        state.lastfeature.marker.setStyle({
             weight: 1,
             color: "#000000"
         });
@@ -489,80 +485,80 @@ function select_feature(marker, feature) {
     if (!L.Browser.ie && !L.Browser.opera) {
         marker.bringToFront();
     }
-    state.last_feature = feature;
+    state.lastfeature = feature;
     $("div#data-graph-title").html(feature.properties.name);
-    state.annual_graph.transition_to_series({
+    state.annualGraph.transitionToSeries({
         series: {
             "tmax-data": feature.properties.tmax.data,
             "tmin-data": feature.properties.tmin.data,
             "tavg-data": feature.properties.tavg.data,
-            "tmax-trend": segment_on_line_coords(feature.properties.tmax.trend,
-                                                 state.graph_config.year1, state.graph_config.year2),
-            "tmin-trend": segment_on_line_coords(feature.properties.tmin.trend,
-                                                 state.graph_config.year1, state.graph_config.year2),
-            "tavg-trend": segment_on_line_coords(feature.properties.tavg.trend,
-                                                 state.graph_config.year1, state.graph_config.year2)
+            "tmax-trend": segmentOnLineCoords(feature.properties.tmax.trend,
+                                                 state.graphConfig.year1, state.graphConfig.year2),
+            "tmin-trend": segmentOnLineCoords(feature.properties.tmin.trend,
+                                                 state.graphConfig.year1, state.graphConfig.year2),
+            "tavg-trend": segmentOnLineCoords(feature.properties.tavg.trend,
+                                                 state.graphConfig.year1, state.graphConfig.year2)
         },
         dura: 0
     });
-    state.trend_graph.transition_to_series({
+    state.trendGraph.transitionToSeries({
         series: {
-            "tmax-trend": segment_through_midpoint_coords(10*feature.properties.tmax.trend[1],
-                                                          [state.graph_config.year1, state.graph_config.temp1],
-                                                          [state.graph_config.year2, state.graph_config.temp2]),
-            "tmin-trend": segment_through_midpoint_coords(10*feature.properties.tmin.trend[1],
-                                                          [state.graph_config.year1, state.graph_config.temp1],
-                                                          [state.graph_config.year2, state.graph_config.temp2]),
-            "tavg-trend": segment_through_midpoint_coords(10*feature.properties.tavg.trend[1],
-                                                          [state.graph_config.year1, state.graph_config.temp1],
-                                                          [state.graph_config.year2, state.graph_config.temp2])
+            "tmax-trend": segmentThroughMidpointCoords(10*feature.properties.tmax.trend[1],
+                                                          [state.graphConfig.year1, state.graphConfig.temp1],
+                                                          [state.graphConfig.year2, state.graphConfig.temp2]),
+            "tmin-trend": segmentThroughMidpointCoords(10*feature.properties.tmin.trend[1],
+                                                          [state.graphConfig.year1, state.graphConfig.temp1],
+                                                          [state.graphConfig.year2, state.graphConfig.temp2]),
+            "tavg-trend": segmentThroughMidpointCoords(10*feature.properties.tavg.trend[1],
+                                                          [state.graphConfig.year1, state.graphConfig.temp1],
+                                                          [state.graphConfig.year2, state.graphConfig.temp2])
         },
         dura: 0
     });
 
-    $("#slope-display-tmax").html(format_slope(feature.properties.tmax.trend[1]));
-    $("#slope-display-tavg").html(format_slope(feature.properties.tavg.trend[1]));
-    $("#slope-display-tmin").html(format_slope(feature.properties.tmin.trend[1]));
+    $("#slope-display-tmax").html(formatSlope(feature.properties.tmax.trend[1]));
+    $("#slope-display-tavg").html(formatSlope(feature.properties.tavg.trend[1]));
+    $("#slope-display-tmin").html(formatSlope(feature.properties.tmin.trend[1]));
 
     $("div#data-graph-openicon span.openicon").removeClass("invisible");
     $("div#data-graph-openicon span.openicon").addClass("visible");
 }
 
-function load_stations(stations, map) {
+function loadStations(stations, map) {
 
     // Use this stationFeatureToColor for an equal interval station coloring that guarantees
     // that slopes near 0 are colored white, and negative slopes are blue, and positive ones
     // are red:
     state.stationFeatureToColor = (function() {
-        function pos_neg_classifiers(vals) {
-            var mm = min_max(vals);
-            var pos_white_threshold = mm.max / (2 * state.colors["white-red"].length + 1);
-            var neg_white_threshold = mm.min / (2 * state.colors["white-blue"].length + 1);
+        function posNegClassifiers(vals) {
+            var mm = minMax(vals);
+            var posWhiteThreshold = mm.max / (2 * state.colors["white-red"].length + 1);
+            var negWhiteThreshold = mm.min / (2 * state.colors["white-blue"].length + 1);
             return {
-                pos_white_threshold: pos_white_threshold,
-                neg_white_threshold: neg_white_threshold,
-                pos: equal_intervals_classifier(pos_white_threshold, mm.max, state.colors["white-red"].length),
-                neg: equal_intervals_classifier(mm.min, neg_white_threshold, state.colors["white-blue"].length)
+                posWhiteThreshold: posWhiteThreshold,
+                negWhiteThreshold: negWhiteThreshold,
+                pos: equalIntervalsClassifier(posWhiteThreshold, mm.max, state.colors["white-red"].length),
+                neg: equalIntervalsClassifier(mm.min, negWhiteThreshold, state.colors["white-blue"].length)
             };
         }
         var classify = {
-            tmin: pos_neg_classifiers(stations.map(function(s) { return s.tmin.trend[1]; })),
-            tmax: pos_neg_classifiers(stations.map(function(s) { return s.tmax.trend[1]; })),
-            tavg: pos_neg_classifiers(stations.map(function(s) { return s.tavg.trend[1]; }))
+            tmin: posNegClassifiers(stations.map(function(s) { return s.tmin.trend[1]; })),
+            tmax: posNegClassifiers(stations.map(function(s) { return s.tmax.trend[1]; })),
+            tavg: posNegClassifiers(stations.map(function(s) { return s.tavg.trend[1]; }))
         };
         return function(feature) {
-            var s = feature.properties[state.station_color_var].trend[1];
+            var s = feature.properties[state.stationColorVar].trend[1];
             if (s >= 0) {
-                if (s < classify[state.station_color_var]["pos_white_threshold"]) {
+                if (s < classify[state.stationColorVar]["posWhiteThreshold"]) {
                     return "#ffffff";
                 } else {
-                    return state.colors["white-red"][classify[state.station_color_var]["pos"](s)];
+                    return state.colors["white-red"][classify[state.stationColorVar]["pos"](s)];
                 }
             } else {
-                if (s > classify[state.station_color_var]["neg_white_threshold"]) {
+                if (s > classify[state.stationColorVar]["negWhiteThreshold"]) {
                     return "#ffffff";
                 } else {
-                    return state.colors["white-blue"][state.colors["white-blue"].length-classify[state.station_color_var]["neg"](s)];
+                    return state.colors["white-blue"][state.colors["white-blue"].length-classify[state.stationColorVar]["neg"](s)];
                 }
             }
         };
@@ -573,12 +569,12 @@ function load_stations(stations, map) {
      // through a blue-red color gradient, but that does not guarantee that slopes near zero correspond to white:
      state.stationFeatureToColor = (function() {
      var classify = {
-     tmin: quantiles_classifier(stations.map(function(s) { return s.tmin.trend[1]; }), state.colors["blue-red"].length),
-     tmax: quantiles_classifier(stations.map(function(s) { return s.tmax.trend[1]; }), state.colors["blue-red"].length),
-     tavg: quantiles_classifier(stations.map(function(s) { return s.tavg.trend[1]; }), state.colors["blue-red"].length)
+     tmin: quantilesClassifier(stations.map(function(s) { return s.tmin.trend[1]; }), state.colors["blue-red"].length),
+     tmax: quantilesClassifier(stations.map(function(s) { return s.tmax.trend[1]; }), state.colors["blue-red"].length),
+     tavg: quantilesClassifier(stations.map(function(s) { return s.tavg.trend[1]; }), state.colors["blue-red"].length)
      };
      return function(feature) {
-     return state.colors["blue-red"][classify[state.station_color_var](feature.properties[state.station_color_var].trend[1])];
+     return state.colors["blue-red"][classify[state.stationColorVar](feature.properties[state.stationColorVar].trend[1])];
      };
      }());
      */
@@ -609,33 +605,33 @@ function load_stations(stations, map) {
             });
             feature.marker = marker;
             marker.on('click', function(e) {
-                if (state.click_locked) {
-                    state.click_locked = false;
-                    select_feature(marker, feature);
+                if (state.clickLocked) {
+                    state.clickLocked = false;
+                    selectFeature(marker, feature);
                     return;
                 }
-                state.click_locked = true;
+                state.clickLocked = true;
             });
             marker.on('mouseover', function(e) {
-                if (state.click_locked) { return; }
-                select_feature(marker, feature);
+                if (state.clickLocked) { return; }
+                selectFeature(marker, feature);
             });
             return marker;
         }
     }).addTo(map);
 
-    if ("stationColorVar" in state.page_args) {
-        set_station_color_var(state.page_args["stationColorVar"]);
+    if ("stationColorVar" in state.pageArgs) {
+        setStationColorVar(state.pageArgs["stationColorVar"]);
     }
 }
 
 $(document).ready(function() {
 
-    state.page_args = page_args();
+    state.pageArgs = pageArgs();
 
-    if ("controls" in state.page_args) {
-        state.page_args["controls"].split(/,/).forEach(function(key) {
-            set_controls(key);
+    if ("controls" in state.pageArgs) {
+        state.pageArgs["controls"].split(/,/).forEach(function(key) {
+            setControls(key);
         });
     }
 
@@ -657,11 +653,11 @@ $(document).ready(function() {
         url: "./stations-data-trend-map.json",
         dataType: "json",
         success: function(data) {
-            load_stations(data, map);
+            loadStations(data, map);
         }
     });
 
-    state.annual_graph = d3_graph({
+    state.annualGraph = d3Graph({
         $elem: $("div#data-graph"),
         margin: {top: 10, right: 10, bottom: 25, left: 28},
         axes: true,
@@ -674,12 +670,12 @@ $(document).ready(function() {
             "tavg-trend" : []
         },
         domain: {
-            x: [state.graph_config.year1, state.graph_config.year2],
-            y: [state.graph_config.temp1, state.graph_config.temp2]
+            x: [state.graphConfig.year1, state.graphConfig.year2],
+            y: [state.graphConfig.temp1, state.graphConfig.temp2]
         }
     });
 
-    state.trend_graph = d3_graph({
+    state.trendGraph = d3Graph({
         $elem: $("div#trend-graph"),
         margin: {top: 10, right: 10, bottom: 10, left: 10},
         axes: false,
@@ -689,31 +685,31 @@ $(document).ready(function() {
             "tavg-trend" : []
         },
         domain: {
-            x: [state.graph_config.year1, state.graph_config.year2],
-            y: [state.graph_config.temp1, state.graph_config.temp2]
+            x: [state.graphConfig.year1, state.graphConfig.year2],
+            y: [state.graphConfig.temp1, state.graphConfig.temp2]
         }
     });
 
-    init_ui();
+    initUI();
   
 });
 
-function init_ui() {
-    $("input[name=stationColorVar][value="+state.station_color_var+"]").attr('checked', true);
-    $("div#station-coloring-display").html("stations colored by " + state.station_color_var + " trend slope");
+function initUI() {
+    $("input[name=stationColorVar][value="+state.stationColorVar+"]").attr('checked', true);
+    $("div#station-coloring-display").html("stations colored by " + state.stationColorVar + " trend slope");
     $("input[name=stationColorVar]").click(function(e) {
-        set_station_color_var($(this).attr("value"));
+        setStationColorVar($(this).attr("value"));
     });
     $(document).keypress(function(e) {
         var key = String.fromCharCode(e.charCode);
         if (key === "0" || key === "1" || key === "2" || key === "3" ) {
-            set_controls(key);
+            setControls(key);
         } else if (key === "x") {
-            set_station_color_var("tmax");
+            setStationColorVar("tmax");
         } else if (key === "g") {
-            set_station_color_var("tavg");
+            setStationColorVar("tavg");
         } else if (key === "n") {
-            set_station_color_var("tmin");
+            setStationColorVar("tmin");
         }
     });
     $("div#data-graph-openicon span.openicon").click(function() {
@@ -721,30 +717,30 @@ function init_ui() {
         $("div#graph-overlay").addClass("visible");
         var $mgDiv = $('<div class="multigraph"></div>')
                 .appendTo($("#graph-overlay .graph-wrapper .multigraph-wrapper"));
-        get_station_tmin_tmax(state.last_feature.properties.id, function(tminmax_data) {
+        getStationTMinTMax(state.lastfeature.properties.id, function(tMinMaxData) {
             $mgDiv.multigraph({
-                muglString: make_mugl(tminmax_data,
-                                      state.last_feature.properties.tmin.data,
-                                      state.last_feature.properties.tmax.data)
+                muglString: makeMugl(tMinMaxData,
+                                      state.lastfeature.properties.tmin.data,
+                                      state.lastfeature.properties.tmax.data)
             });
             $mgDiv.multigraph('done', function(m) {
                 var haxis = m.graphs().at(0).axes().at(0);
-                var daily_plot = m.graphs().at(0).plots().at(0);
-                var monthly_plot = m.graphs().at(0).plots().at(1);
+                var dailyPlot = m.graphs().at(0).plots().at(0);
+                var monthlyPlot = m.graphs().at(0).plots().at(1);
                 var threshold = multigraph.core.DatetimeMeasure.parse("11Y");
-                function set_plot_visibility(min, max) {
+                function setPlotVisibility(min, max) {
                     if (max.getRealValue() - min.getRealValue() > threshold.getRealValue()) {
                         // the range of data in view is larger than threshold, so turn daily plot off
-                        daily_plot.visible(false);
-                        monthly_plot.visible(true);
+                        dailyPlot.visible(false);
+                        monthlyPlot.visible(true);
                     } else {
-                        daily_plot.visible(true);
-                        monthly_plot.visible(false);
+                        dailyPlot.visible(true);
+                        monthlyPlot.visible(false);
                     }
                 }
-                set_plot_visibility(haxis.dataMin(), haxis.dataMax());
+                setPlotVisibility(haxis.dataMin(), haxis.dataMax());
                 haxis.addListener('dataRangeSet', function(data) {
-                    set_plot_visibility(data.min, data.max);
+                    setPlotVisibility(data.min, data.max);
                 });
             });
         });
