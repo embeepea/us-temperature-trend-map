@@ -4,8 +4,9 @@ This an interctive web application that lets the user explore and visualize
 long term daily temperature data from the
 [Global Historical Climatology Network](https://www.ncdc.noaa.gov/data-access/land-based-station-data/land-based-datasets/global-historical-climatology-network-ghcn).
 
-You can view it online here: http://demos.fernleafinteractive.com/temperature-trends,
-and you can watch a short video screencast demo of it here: https://www.youtube.com/watch?v=b1NsRnbRwD0
+You can view it online here: http://demos.fernleafinteractive.com/temperature-trends
+
+And here's a short video screencast demo: https://www.youtube.com/watch?v=b1NsRnbRwD0
 
 I made this as a demonstration of one way to visualize climate data; it's intended simply
 as a demonstration of the software involved, not as a definitive statement about trends
