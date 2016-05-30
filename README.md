@@ -1,6 +1,6 @@
 # Temperature Trend Map
 
-![Temperature Trend Map](map1.png)
+![Temperature Trend Map](map1-2.png)
 
 ## Overview
 
@@ -33,7 +33,7 @@ on any station thereafter will unlock it.
 You can click on the little pop-out icon in the upper left corner of the
 first black inset graph 
 
-![Daily Data Plot](inset.png)
+![Daily Data Plot](inset-2.png)
 
 to cause an interactive Multigraph to appear which shows
 the annual average plots along with the underlying daily data.  This plot
@@ -41,7 +41,7 @@ is configured to switch between displaying a monthly aggregate of
 the daily data at large zoom levels, but switches to show the actualy daily
 values when zoomed in to a period of about 10 years or less.
 
-![Daily Data Plot](map2.png)
+![Daily Data Plot](map2-2.png)
 
 ## Setup
 
