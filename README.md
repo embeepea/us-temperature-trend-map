@@ -31,8 +31,11 @@ Clicking on a station will "lock" the program onto that station; clicking
 on any station thereafter will unlock it.
 
 You can click on the little pop-out icon in the upper left corner of the
-first black inset graph (the one showing the annual plots along with the
-trend lines), to cause an interactive Multigraph to appear which shows
+first black inset graph 
+
+![Daily Data Plot](map2.png)
+
+to cause an interactive Multigraph to appear which shows
 the annual average plots along with the underlying daily data.  This plot
 is configured to switch between displaying a monthly aggregate of
 the daily data at large zoom levels, but switches to show the actualy daily
