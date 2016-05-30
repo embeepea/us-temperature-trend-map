@@ -33,7 +33,7 @@ on any station thereafter will unlock it.
 You can click on the little pop-out icon in the upper left corner of the
 first black inset graph 
 
-![Daily Data Plot](map2.png)
+![Daily Data Plot](inset.png)
 
 to cause an interactive Multigraph to appear which shows
 the annual average plots along with the underlying daily data.  This plot
