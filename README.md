@@ -78,16 +78,16 @@ and follow the instructions.  Then make a copy of the file
 file to insert your Mapbox token.
 
 Once you have `map-config.js` set up, just point your browser to your copy
-of `index.html`.  There is no building step required, and the project
+of `index.html`.  There is no build step required, and the project
 includes a copy of all of its dependencies.
 
 ## Data Analysis
 
-Here are the details of how I processed the data to create the program:
+Here are the details of how I processed the data for this program:
 
 1. I downloaded the file `ghcnd_all.tar.gz` from the
-   [GHCN Daily ftp site](ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/daily).
-   The  entire data set contains data from roughly 90,000 stations.
+   [GHCN Daily ftp site](ftp.ncdc.noaa.gov/pub/data/ghcn/daily).
+   The entire data set contains data from roughly 90,000 stations.
    
 1. I eliminated all stations that are not in the United States.  It would
    be very interesting to do this analysis with the entire data set,
