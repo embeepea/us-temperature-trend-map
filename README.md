@@ -115,4 +115,4 @@ Here are the details of how I processed the data for this program:
    
 The code that performed the above analysis is written in Clojure and
 is available here: 
-[http://github.com/embeepea/ghcn-trend-analysis](http://github.com/embeepea/ghcn-trend-analysis).
+[http://github.com/embeepea/us-temperature-trend-analysis](http://github.com/embeepea/us-temperature-trend-analysis).
