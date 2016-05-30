@@ -106,14 +106,14 @@ function dataArrayToObject(data) {
 function getStationTMinTMax(id, callback) {
     $.when.apply($, [
         $.ajax({
-            url: 'https://s3.amazonaws.com/nemac-ghcnd/' + id + '/TMIN.csv.gz',
+            url: mapConfig.ghcndDataURLPrefix + "/" + id + '/TMIN.csv.gz',
             dataType: "text",
             success: function(data, textStatus, jqXHR) {
                 //console.log('got TMIN');
             }
         }),
         $.ajax({
-            url: 'https://s3.amazonaws.com/nemac-ghcnd/' + id + '/TMAX.csv.gz',
+            url: mapConfig.ghcndDataURLPrefix + "/" + id + '/TMAX.csv.gz',
             dataType: "text",
             success: function(data, textStatus, jqXHR) {
                 //console.log('got TMAX');
@@ -640,9 +640,8 @@ $(document).ready(function() {
     }).setView([37.09, -95.71], 5);
     map.attributionControl.setPrefix("");
 
-    var mbUrl = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}@2x.png?access_token=pk.eyJ1IjoiZW1iZWVwZWEiLCJhIjoiZTIyMTc1MmFkOWYwODI3MTYwMmY3MDU0NTYxNmYxZWUifQ.hm8HaatuyBAdwRWiYYYBZw";
+    var mbUrl = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}@2x.png?access_token=" + mapConfig.mapboxToken;
 
-    //L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
     L.tileLayer(mbUrl, {
         maxZoom: 18,
         attribution: ""//,
