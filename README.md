@@ -54,6 +54,18 @@ the upper right corner of the graph to return to the map.
 
 See the **Data Analysis** section below for more details on the data.
 
+## Why Are There So Many Blue Stations?
+
+If you're wondering why there are so many stations in the southeast where the
+trend seems to be towards cooling rather than warming, you're not alone.
+This is an example of a well-known phenomenon in the climate science world
+known as a "warming hole".  If you look at how temperature has been changing
+across the entire surface of the earth, overwhelmingly most locations show
+a warming trend.  But the change isn't uniform, and there are some places
+such as the southeast US, where the trend is in the other direction.
+You can read more about this phenomenon in this
+[excellent article on climate.gov](https://www.climate.gov/news-features/climate-qa/does-global-warming-mean-it%E2%80%99s-warming-everywhere).
+
 ## Setup
 
 If you want to run your own copy of this program, there is just one
