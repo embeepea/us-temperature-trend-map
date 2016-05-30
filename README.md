@@ -4,7 +4,7 @@
 
 ## Overview
 
-This an interctive web application that lets the user explore and visualize
+This an interctive map that lets you explore
 long term daily temperature data from the
 [Global Historical Climatology Network](https://www.ncdc.noaa.gov/data-access/land-based-station-data/land-based-datasets/global-historical-climatology-network-ghcn).
 
@@ -13,35 +13,40 @@ You can view it online here: http://demos.fernleafinteractive.com/temperature-tr
 And here's a short video screencast demo: https://www.youtube.com/watch?v=b1NsRnbRwD0
 
 ## Usage Instructions
-   
-When the map first appears, it shows the 2094 stations colored according to
-the average of these two slopes, with red corresponding to positive values,
-and blue corresponding to negative values.
 
-As you mouse over the stations in the map, the two black inset windows show
-the annual average TMIN and TMAX plots, along with their trend lines.  The
-TMAX plot is red and the TMIN plot is cyan.  The white plot is the average
-of the two.
+The map shows just over 2000 weather stations in the United States, colored
+according to how the annual average temperature changed at that station over the 20th century.
+A red color indicates an increase, and a blue color indicates a decrease, with the
+intensity of the color indicating the amount of change.
+
+As you move the mouse over the stations in the map, the large black
+inset graph in the upper right corner shows the annual data from each
+station.
+
+Clicking on a station will "lock" the display onto that station; clicking
+on any station thereafter will unlock it.
+
+In the large black inset graph, the red plot shows the annual average
+of the daily maximum temperature, and the cyan plot shows the annual
+average of the daily minimum temperature.  The white plot is the
+average of these two.  Each of these three plots show the actual annual
+timeseries, as well as the trend line associate with it.
 
 The smaller black inside window shows the trend lines, with their
 slopes magnified by a factor of 10, just so that you can better see
 the direction of the slope.
 
-Clicking on a station will "lock" the program onto that station; clicking
-on any station thereafter will unlock it.
-
-You can click on the little pop-out icon in the upper left corner of the
-first black inset graph 
-
 ![Daily Data Plot](inset-2.png)
 
-to cause an interactive Multigraph to appear which shows
-the annual average plots along with the underlying daily data.  This plot
-is configured to switch between displaying a monthly aggregate of
-the daily data at large zoom levels, but switches to show the actualy daily
-values when zoomed in to a period of about 10 years or less.
+You can click on the little pop-out icon in the upper left corner of the
+large black inset graph to get a detailed graph of the individual daily values
+for that station.
 
 ![Daily Data Plot](map2-2.png)
+
+The graph is interactive -- you can pan the graph with the mouse, and/or
+use the mouse scroll wheel to zoom in or out.  You can also zoom by holding
+down the keyboard shift key while dragging with the mouse.
 
 ## Setup
 
