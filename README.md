@@ -1,4 +1,8 @@
-# GHCN Trend Map
+# Temperature Trend Map
+
+![Temperature Trend Map](map1.png)
+
+## Overview
 
 This an interctive web application that lets the user explore and visualize
 long term daily temperature data from the
@@ -7,6 +11,38 @@ long term daily temperature data from the
 You can view it online here: http://demos.fernleafinteractive.com/temperature-trends
 
 And here's a short video screencast demo: https://www.youtube.com/watch?v=b1NsRnbRwD0
+
+## Usage Instructions
+   
+When the map first appears, it shows the 2094 stations colored according to
+the average of these two slopes, with red corresponding to positive values,
+and blue corresponding to negative values.
+
+As you mouse over the stations in the map, the two black inset windows show
+the annual average TMIN and TMAX plots, along with their trend lines.  The
+TMAX plot is red and the TMIN plot is cyan.  The white plot is the average
+of the two.
+
+The smaller black inside window shows the trend lines, with their
+slopes magnified by a factor of 10, just so that you can better see
+the direction of the slope.
+
+Clicking on a station will "lock" the program onto that station; clicking
+on any station thereafter will unlock it.
+
+You can click on the little pop-out icon in the upper left corner of the
+first black inset graph (the one showing the annual plots along with the
+trend lines), to cause an interactive Multigraph to appear which shows
+the annual average plots along with the underlying daily data.  This plot
+is configured to switch between displaying a monthly aggregate of
+the daily data at large zoom levels, but switches to show the actualy daily
+values when zoomed in to a period of about 10 years or less.
+
+![Daily Data Plot](map2.png)
+
+## Setup
+
+## Data Analysis
 
 I made this as a demonstration of one way to visualize climate data; it's intended simply
 as a demonstration of the software involved, not as a definitive statement about trends
@@ -38,26 +74,3 @@ The code that performed the above analysis is written in Clojure and
 is available here: 
 [http://github.com/embeepea/ghcn-trend-analysis](http://github.com/embeepea/ghcn-trend-analysis).
 
-When the map first appears, it shows the 2094 stations colored according to
-the average of these two slopes, with red corresponding to positive values,
-and blue corresponding to negative values.
-
-As you mouse over the stations in the map, the two black inset windows show
-the annual average TMIN and TMAX plots, along with their trend lines.  The
-TMAX plot is red and the TMIN plot is cyan.  The white plot is the average
-of the two.
-
-The smaller black inside window shows the trend lines, with their
-slopes magnified by a factor of 10, just so that you can better see
-the direction of the slope.
-
-Clicking on a station will "lock" the program onto that station; clicking
-on any station thereafter will unlock it.
-
-You can click on the little pop-out icon in the upper left corner of the
-first black inset graph (the one showing the annual plots along with the
-trend lines), to cause an interactive Multigraph to appear which shows
-the annual average plots along with the underlying daily data.  This plot
-is configured to switch between displaying a monthly aggregate of
-the daily data at large zoom levels, but switches to show the actualy daily
-values when zoomed in to a period of about 10 years or less.
